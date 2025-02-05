@@ -6,8 +6,12 @@ import TaskListDS from "../data_services/TaskListDS";
 import ITaskList from "../data_interfaces/ITaskList";
 import DeleteIcon from '@mui/icons-material/Delete';
 
+type TaskListProps = {
+  setTaskIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedTaskList: React.Dispatch<React.SetStateAction<ITaskList | null>>;
+}
 
-function TaskList(){
+function TaskList({ setTaskIsOpen, setSelectedTaskList }: TaskListProps) {
 
     const [open, setOpen] = React.useState(false);
     const [newListName, setNewListName] = React.useState("");
@@ -17,6 +21,13 @@ function TaskList(){
       TaskListDS.getAll().then(taskListsPrise => {
         setTaskLists(taskListsPrise);
       });}, []);
+
+    const HandleTaskListClick = (taskList: ITaskList) => {
+      setSelectedTaskList(taskList);
+      setTaskIsOpen(true);
+    }
+      
+
 
     const HandleOpenDialog = () => {
         setOpen(true);
@@ -28,6 +39,7 @@ function TaskList(){
       TaskListDS.remove(tasklist).then(taskListsPrise => {
         setTaskLists(taskListsPrise);
       });
+      setTaskIsOpen(false);
     };
 
     const HandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +70,7 @@ function TaskList(){
               {taskLists.length > 0 ?(
                 <List>
                   {taskLists.map((lestask) => (
-                    <ListItemButton key={lestask.id}>
+                    <ListItemButton key={lestask.id} onClick={() => HandleTaskListClick(lestask)}>
                       <ListItemText primary={lestask.name} />
                       <IconButton edge="end" onClick={(event) => handleDelete(event, lestask)} >
                         <DeleteIcon />
